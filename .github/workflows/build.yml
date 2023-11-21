@@ -23,10 +23,10 @@ jobs:
     - name: Zip publishable website
       run: |
         zip -r publish.zip .
-      working-directory: ./InfrastructureAsCodeV1/InfrastructureAsCodeV1.Web/bin/Release/net6.0/wwwroot/_framework
+      working-directory: ./InfrastructureAsCodeV1/InfrastructureAsCodeV1.Web/bin/Release/net6.0/publish
 
     - name: Upload website as workflow artifact
       uses: actions/upload-artifact@v3
       with:
         name: website
-        path: ./InfrastructureAsCodeV1/InfrastructureAsCodeV1.Web/bin/Release/net6.0/wwwroot/_framework/publish.zip
+        path: ./InfrastructureAsCodeV1/InfrastructureAsCodeV1.Web/bin/Release/net6.0/publish/publish.zip
