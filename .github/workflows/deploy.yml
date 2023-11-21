@@ -81,8 +81,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
-      with:
-        name: website
     - uses: azure/login@v1
       name: Sign in to Azure
       with:
