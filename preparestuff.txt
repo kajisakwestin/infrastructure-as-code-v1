@@ -1,0 +1,41 @@
+Connect-AzAccount
+
+(ev för att kontrollera att du har loggat in rätt) 
+Get-AzContext
+
+----------------------
+
+$githubOrganizationName = 'kajisakwestin'
+$githubRepositoryName = 'end-to-end-deployment-kajsversion-simpler'
+
+-------------------
+
+$applicationRegistration = New-AzADApplication -DisplayName 'Blazor-for-test'
+
+New-AzADAppFederatedCredential `
+   -Name 'Blazor-for-test-workflow' `
+   -ApplicationObjectId $applicationRegistration.Id `
+   -Issuer 'https://token.actions.githubusercontent.com' `
+   -Audience 'api://AzureADTokenExchange' `
+   -Subject "repo:$($githubOrganizationName)/$($githubRepositoryName):ref:refs/heads/main"
+
+------------------
+
+$resourceGroup = New-AzResourceGroup -Name BlazorForTestResourceGroup -Location westus3
+
+New-AzADServicePrincipal -AppId $applicationRegistration.AppId
+
+New-AzRoleAssignment `
+   -ApplicationId $($applicationRegistration.AppId) `
+   -RoleDefinitionName Contributor `
+   -Scope $resourceGroup.ResourceId
+
+-------------------
+
+$azureContext = Get-AzContext
+Write-Host "AZURE_CLIENT_ID: $($applicationRegistration.AppId)"
+Write-Host "AZURE_TENANT_ID: $($azureContext.Tenant.Id)"
+Write-Host "AZURE_SUBSCRIPTION_ID: $($azureContext.Subscription.Id)"
+
+------------------------
+
