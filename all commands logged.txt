@@ -3,7 +3,9 @@ Connect-AzAccount
 ----------------------
 $githubOrganizationName = 'kajisakwestin'
 $githubRepositoryName = 'infrastructure-as-code-v1'
+
 ------------------------
+
 Run the following code, which creates a workload identity for the test environment and associates it with your GitHub repository:
 
 $testApplicationRegistration = New-AzADApplication -DisplayName 'infrastructure-as-code-v1-test'
@@ -21,7 +23,9 @@ New-AzADAppFederatedCredential `
    -Issuer 'https://token.actions.githubusercontent.com' `
    -Audience 'api://AzureADTokenExchange' `
    -Subject "repo:$($githubOrganizationName)/$($githubRepositoryName):ref:refs/heads/main"
+
 ----------------------------
+
 Run the following code, which follows a similar process for the production environment:
 
 $productionApplicationRegistration = New-AzADApplication -DisplayName 'infrastructure-as-code-v1-production'
@@ -39,7 +43,9 @@ New-AzADAppFederatedCredential `
    -Issuer 'https://token.actions.githubusercontent.com' `
    -Audience 'api://AzureADTokenExchange' `
    -Subject "repo:$($githubOrganizationName)/$($githubRepositoryName):ref:refs/heads/main"
+
 ------------------------
+
 To create the test environment's resource group and grant the workload identity access to it, run the following Azure PowerShell commands in the Visual Studio Code terminal:
 
 $testResourceGroup = New-AzResourceGroup -Name InfraStructureAsCodeV1Test -Location westus3
@@ -50,7 +56,9 @@ New-AzRoleAssignment `
    -ApplicationId $($testApplicationRegistration.AppId) `
    -RoleDefinitionName Contributor `
    -Scope $($testResourceGroup.ResourceId)
+
 ----------------------
+
 Run a similar process to create the production environment's resource group:
 
 $productionResourceGroup = New-AzResourceGroup -Name InfraStructureAsCodeV1Production -Location westus3
@@ -61,10 +69,13 @@ New-AzRoleAssignment `
    -ApplicationId $($productionApplicationRegistration.AppId) `
    -RoleDefinitionName Contributor `
    -Scope $($productionResourceGroup.ResourceId)
+
 ---------------------
+
 $azureContext = Get-AzContext
 Write-Host "AZURE_CLIENT_ID_TEST: $($testApplicationRegistration.AppId)"
 Write-Host "AZURE_CLIENT_ID_PRODUCTION: $($productionApplicationRegistration.AppId)"
 Write-Host "AZURE_TENANT_ID: $($azureContext.Tenant.Id)"
 Write-Host "AZURE_SUBSCRIPTION_ID: $($azureContext.Subscription.Id)"
+
 -------------------
